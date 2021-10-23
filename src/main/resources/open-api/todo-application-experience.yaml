@@ -1,0 +1,145 @@
+openapi: 3.0.1
+info:
+  title: Todo Application
+  description: 'Sample Todo Application with Open Api 3.0'
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: mohit.paudyal@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://todoApp/v1
+- url: http://todoApp/v1
+paths:
+  /post/add:
+    post:
+      tags:
+      - Life Cycle Methods
+      summary: Add a new todo to the list of todos
+      operationId: createPostByMethodPOST
+      requestBody:
+        description: Todo object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      responses:
+        200:
+          description: Request Ok
+          content: {}
+      x-codegen-request-body-name: body
+  /post/findByStatus:
+    get:
+      tags:
+      - Life Cycle Methods
+      summary: Find post by status
+      description: Status that are at different lifecycle stages 
+      operationId: getListOfPostsByMethodGET
+      parameters:
+      - name: status
+        in: query
+        description: Status values that need to be considered for filter
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+            default: pending
+            enum:
+            - completed
+            - pending
+            - archived
+      responses:
+        200:
+          description: response is valid.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        500:
+          description: Internal Server Error
+          content: {}
+  /post/{postId}:
+    get:
+      tags:
+      - Life Cycle Methods
+      summary: Find post by id
+      description: Returns a single post
+      operationId: getPostByMethodGET
+      parameters:
+      - name: postId
+        in: path
+        description: ID of post to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        500:
+          description: Internal Server Error
+          content: {}
+    delete:
+      tags:
+      - Life Cycle Methods
+      summary: Deletes a post
+      operationId: deletePostByMethodDELETE
+      parameters:
+      - name: postId
+        in: path
+        description: Post id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        500:
+          description: Internal Server Error
+          content: {}
+
+components:
+  schemas:
+    Post:
+      required:
+      - title
+      - description
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+          example: Sample Post Title
+        description:
+          type: string
+          example: Sample Post Description
+        isArchived:
+          type: boolean
+          description: archived within default days of thirty
+          example: false
+        status:
+          type: string
+          description: post status in the store
+          enum:
+          - completed
+          - pending
+          - archived
